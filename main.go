@@ -4,23 +4,34 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/jackc/pgx/v5"
+	// Import the godotenv library
 )
 
 // User represents a user record from the database.
 type User struct {
 	ID   int
-	Name string
-	Age  int
+	UserName string
+	CheckPointData  string
 }
 
 // initDB establishes a connection to the PostgreSQL database.
 func initDB() (*pgx.Conn, error) {
 	// IMPORTANT: You must replace these values with your own PostgreSQL database credentials.
 	// This connection string uses the "database/sql" format, which pgx can handle.
-	connStr := "user=youruser password=yourpassword dbname=yourdbname host=localhost port=5432 sslmode=disable"
-	
+	// connStr := "user=youruser password=yourpassword dbname=yourdbname host=localhost port=5432 sslmode=disable"
+
+
+	avienUser := os.Getenv("AVIEN_DB_USER")
+	avienPassword := os.Getenv("AVIEN_DB_PASSWORD")
+	avienDBName := os.Getenv("AVIEN_DB_NAME")
+	avienHost := os.Getenv("AVIEN_DB_HOST")
+	avienDBPort := os.Getenv("AVIEN_DB_PORT")
+	avienSSLMode := os.Getenv("AVIEN_DB_SSL_MODE")
+
+   	connStr := fmt.Sprintf("user=%d password=%d dbname=%d host=%d port=%d sslmode=%d", avienUser, avienPassword, avienDBName, avienHost, avienDBPort, avienSSLMode)	
 	// Establish a connection to the database.
 	conn, err := pgx.Connect(context.Background(), connStr)
 	if err != nil {

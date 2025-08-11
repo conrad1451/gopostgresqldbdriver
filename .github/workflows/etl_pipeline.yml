@@ -1,0 +1,72 @@
+# .github/workflows/etl_pipeline.yml
+
+name: ETL Pipeline
+
+on:
+  # Trigger the workflow on pushes to the 'main' branch (for testing/initial setup)
+  push:
+    branches:
+      - main
+    paths:
+      - "main.go"
+      - ".github/workflows/etl_pipeline.yml" # Rerun if workflow itself changes
+
+  # Trigger the workflow on a schedule (e.g., daily at 02:00 UTC)
+  # schedule:
+  # Uses cron syntax. Learn more: https://crontab.guru/
+  # new time of 2:52pm NYC time (1840 UTC) - 1440 + 4h offset
+  # - cron: "52 18 * * *"
+  # test time of 130am NYC time (530 UTC) - 0130 + 4h offest
+  # - cron: "30 5 * * *"
+
+  # test time of 640am NYC time (1040 UTC) - 0640 + 4h offest
+  # - cron: "40 10 * * *"
+
+  # test time of 310am NYC time (0710 UTC) - 0310 + 4h offest
+  # - cron: "10 7 * * 4"
+  # - cron: "0 0 * * 0"  # Runs every Sunday at midnight UTC # Google Search (can you make a yaml file run a job monthly?)
+jobs:
+  run_etl:
+    runs-on: ubuntu-latest # Use a fresh Ubuntu runner for each job
+
+    # Set environment variables from GitHub Secrets
+    env:
+      AVIEN_DB_USER: ${{ secrets.AVIEN_DB_USER }}
+      AVIEN_DB_PASSWORD: ${{ secrets.AVIEN_DB_PASSWORD }}
+      AVIEN_DB_NAME: ${{ secrets.AVIEN_DB_NAME }}
+      AVIEN_DB_HOST: ${{ secrets.AVIEN_DB_HOST }}
+      AVIEN_DB_PORT: ${{ secrets.AVIEN_DB_PORT }}
+      AVIEN_DB_SSL_MODE: ${{ secrets.AVIEN_DB_SSL_MODE }}
+      # AVIEN_DB_CONNECTION: ${{ secrets.AVIEN_DB_CONNECTION_BSS_DB }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 # Action to check out your repository code
+
+      - name: Set up Python
+        uses: actions/setup-python@v5 # Action to set up Python environment
+        with:
+          python-version: "3.9" # Specify your Python version (e.g., 3.8, 3.9, 3.10)
+
+      - name: Install system dependencies for psycopg2
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libpq-dev python3-dev
+          python -m pip install --upgrade pip
+          pip install "psycopg[binary]" sqlalchemy
+        # pip install --no-cache-dir --force-reinstall -r requirements.txt
+        # pip install psycopg2 sqlalchemy
+
+      - name: Clean up old log file
+        run: rm -f etl_output.log # Deletes the log file if it exists
+
+      - name: Run ETL Script
+        id: run_script
+        run: python models_and_migration_etl.py
+
+      - name: Check for new data
+        # (Optional: for debugging)
+        # You could add steps here to verify data in Aiven, e.g., using psql
+        # This step is just a placeholder to show where you might add checks.
+        run: |
+          echo "ETL script finished. Check Aiven database for updated schema."
