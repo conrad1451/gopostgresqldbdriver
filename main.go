@@ -57,8 +57,8 @@ func initDB() (*pgx.Conn, error) {
 
 // getUsers retrieves a slice of users from the database.
 func getUsers(ctx context.Context, db *pgx.Conn) ([]User, error) {
-	// Execute the query to get all users.
-	rows, err := db.Query(ctx, "SELECT id, name, age FROM users")
+	// Execute the query to get all users.	
+	rows, err := db.Query(ctx, "SELECT id, username, checkpointdata FROM users")
 	if err != nil {
 		return nil, fmt.Errorf("failed to query users: %w", err)
 	}
@@ -69,7 +69,7 @@ func getUsers(ctx context.Context, db *pgx.Conn) ([]User, error) {
 	// Iterate through the rows and scan the data into User structs.
 	for rows.Next() {
 		var user User
-		if err := rows.Scan(&user.ID, &user.Name, &user.Age); err != nil {
+		if err := rows.Scan(&user.ID, &user.UserName, &user.CheckPointData); err != nil {
 			return nil, fmt.Errorf("failed to scan user row: %w", err)
 		}
 		users = append(users, user)
@@ -94,13 +94,12 @@ func main() {
 
 	// Use a context for the query.
 	ctx := context.Background()
-
-	// Example: Add a new user (assuming the 'users' table exists with 'id', 'name', 'age' columns).
+	// Example: Add a new user (assuming the 'users' table exists with 'id', 'username', 'checkpointdata' columns).
 	// This is just to ensure the table has some data for the select query to work.
 	// You might need to create the table first in your PostgreSQL instance.
-	// CREATE TABLE users (id serial PRIMARY KEY, name VARCHAR(50), age INT);
-	insertSQL := `INSERT INTO users (name, age) VALUES ($1, $2)`
-	_, err = conn.Exec(ctx, insertSQL, "Alice", 30)
+	// CREATE TABLE users (id serial PRIMARY KEY, username VARCHAR(50), checkpointdata VARCHAR(50));
+	insertSQL := `INSERT INTO users (username, checkpointdata) VALUES ($1, $2)`
+	_, err = conn.Exec(ctx, insertSQL, "Alice", "30safdsfsd")
 	if err != nil {
 		// Log the error but don't exit, as the user might already exist.
 		log.Printf("could not insert user: %v", err)
@@ -115,7 +114,7 @@ func main() {
 	// Print the retrieved users.
 	fmt.Println("\nUsers found in the database:")
 	for _, user := range users {
-		fmt.Printf("ID: %d, Name: %s, Age: %d\n", user.ID, user.Name, user.Age)
+		fmt.Printf("ID: %d, Username: %s, checkpointdata: %d\n", user.ID, user.UserName, user.CheckPointData)
 	}
 }
 
