@@ -1,6 +1,6 @@
-# .github/workflows/etl_pipeline.yml
+# .github/workflows/postgresql_workflow.yml
 
-name: ETL Pipeline
+name: PostgreSQL workflow
 
 on:
   # Trigger the workflow on pushes to the 'main' branch (for testing/initial setup)
@@ -62,7 +62,7 @@ jobs:
 
       - name: Run ETL Script
         id: run_script
-        run: python models_and_migration_etl.py
+        run: go run main.go
 
       - name: Check for new data
         # (Optional: for debugging)
