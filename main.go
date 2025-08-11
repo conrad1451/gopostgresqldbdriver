@@ -31,7 +31,14 @@ func initDB() (*pgx.Conn, error) {
 	avienDBPort := os.Getenv("AVIEN_DB_PORT")
 	avienSSLMode := os.Getenv("AVIEN_DB_SSL_MODE")
 
-   	connStr := fmt.Sprintf("user=%d password=%d dbname=%d host=%d port=%d sslmode=%d", avienUser, avienPassword, avienDBName, avienHost, avienDBPort, avienSSLMode)	
+   	connStr := fmt.Sprintf("user=%d password=%d dbname=%d host=%d port=%d sslmode=%d", 
+	avienUser, avienPassword, avienDBName, avienHost, avienDBPort, avienSSLMode)	
+	 
+	// Check if any of the environment variables are empty.
+	if avienUser == "" || avienPassword == "" || avienDBName == "" || avienHost == "" || avienDBPort == "" || avienSSLMode == "" {
+		return nil, fmt.Errorf("database connection environment variables are not set")
+	}
+
 	// Establish a connection to the database.
 	conn, err := pgx.Connect(context.Background(), connStr)
 	if err != nil {

@@ -43,24 +43,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4 # Action to check out your repository code
 
-      - name: Set up Python
+      - name: Set up Go
         uses: actions/setup-python@v5 # Action to set up Python environment
         with:
           python-version: "3.9" # Specify your Python version (e.g., 3.8, 3.9, 3.10)
 
-      - name: Install system dependencies for psycopg2
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libpq-dev python3-dev
-          python -m pip install --upgrade pip
-          pip install "psycopg[binary]" sqlalchemy
-        # pip install --no-cache-dir --force-reinstall -r requirements.txt
-        # pip install psycopg2 sqlalchemy
-
       - name: Clean up old log file
         run: rm -f etl_output.log # Deletes the log file if it exists
 
-      - name: Run ETL Script
+      - name: Run Script
         id: run_script
         run: go run main.go
 
@@ -69,4 +60,4 @@ jobs:
         # You could add steps here to verify data in Aiven, e.g., using psql
         # This step is just a placeholder to show where you might add checks.
         run: |
-          echo "ETL script finished. Check Aiven database for updated schema."
+          echo "script finished. Check Aiven database for updated schema."
