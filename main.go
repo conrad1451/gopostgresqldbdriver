@@ -31,7 +31,7 @@ func initDB() (*pgx.Conn, error) {
 	avienDBPort := os.Getenv("AVIEN_DB_PORT")
 	avienSSLMode := os.Getenv("AVIEN_DB_SSL_MODE")
 
-   	connStr := fmt.Sprintf("user=%d password=%d dbname=%d host=%d port=%d sslmode=%d", 
+   	connStr := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=%s", 
 	avienUser, avienPassword, avienDBName, avienHost, avienDBPort, avienSSLMode)	
 	 
 	// Check if any of the environment variables are empty.
