@@ -114,7 +114,7 @@ func main() {
 	// Print the retrieved users.
 	fmt.Println("\nUsers found in the database:")
 	for _, user := range users {
-		fmt.Printf("ID: %d, Username: %s, checkpointdata: %d\n", user.ID, user.UserName, user.CheckPointData)
+		fmt.Printf("ID: %d, Username: %s, checkpointdata: %s\n", user.ID, user.UserName, user.CheckPointData)
 	}
 }
 
